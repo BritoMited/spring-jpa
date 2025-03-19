@@ -12,6 +12,8 @@ import com.britomited.curso.repositories.UserRepository;
 import com.britomited.curso.services.exception.DatabaseException;
 import com.britomited.curso.services.exception.ResourceNotFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class UserService {
 	
@@ -45,10 +47,16 @@ public class UserService {
 	}
 	
 	public User update(Long id, User obj) {
+		User entity = null;
 		
-		User entity = repository.getReferenceById(id);
-		
-		updateData(entity,obj);
+		try {
+			entity = repository.getReferenceById(id);
+			
+			updateData(entity,obj);
+			
+		}catch(EntityNotFoundException e) {
+			throw new ResourceNotFoundException(id);
+		}
 		
 		return repository.save(entity);
 	}
